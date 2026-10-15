@@ -83,10 +83,10 @@ export async function resolverPicto(texto, opciones = {}) {
  * van en sentido antihorario y los huecos en horario.
  */
 export function reliefDesdeRGBA(rgba, w, h, o = {}) {
-  const N = o.resolucion ?? 256;      // celdas en la dimensión mayor
+  const N = o.resolucion ?? 480;      // celdas en la dimensión mayor
   const blanco = o.blanco ?? 235;     // por encima = fondo (imágenes sin transparencia)
   const oscuro = o.oscuro ?? 90;      // por debajo = línea oscura
-  const engrosar = o.engrosar ?? 0.008; // radio de engrosado, fracción del tamaño
+  const engrosar = o.engrosar ?? 0.002; // radio de engrosado, fracción del tamaño
 
   let hayAlfa = false;
   for (let i = 3; i < rgba.length; i += 4) if (rgba[i] < 250) { hayAlfa = true; break; }

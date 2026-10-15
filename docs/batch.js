@@ -54,10 +54,10 @@ export function slug(texto, max = 40) {
 }
 
 /**
- * Nombres de archivo únicos y ordenados: "01-hola.stl", "02-adios.stl"…
+ * Nombres de archivo únicos y ordenados: "01-hola.svg", "02-adios.svg"…
  * El prefijo numérico evita duplicados y mantiene el orden del lote.
  */
 export function nombresArchivo(items) {
   const ancho = String(items.length).length;
-  return items.map((it) => `${String(it.numero).padStart(Math.max(2, ancho), "0")}-${slug(it.texto.split("\n")[0])}.stl`);
+  return items.map((it) => `${String(it.numero).padStart(Math.max(2, ancho), "0")}-${slug(it.texto.split("\n")[0])}.svg`);
 }

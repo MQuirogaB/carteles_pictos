@@ -268,3 +268,10 @@ details.panel[open] > summary { border-bottom: 1px solid var(--border); }
 .thumb { width: 36px; height: 36px; object-fit: contain; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
 .foot-note { font-size: 12px; margin: 4px 0 0; }
 .note code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; color: var(--accent-dark); }
+
+/* ---------- vista previa SVG ---------- */
+#svg-holder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 28px; transition: background .2s; }
+#svg-holder svg { width: 100%; height: 100%; filter: drop-shadow(0 1px 3px rgba(0,0,0,.12)); }
+#svg-holder.oscuro { background: #2b2a33; }
+.viewport-card { background: #f4f2f6; }
+input[type="color"] { width: 44px; height: 30px; padding: 2px; border: 1px solid var(--border); border-radius: 8px; background: #fff; cursor: pointer; }

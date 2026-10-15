@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Carteles con pictogramas · generador online · miguelquiroga.es</title>
-<meta name="description" content="Convierte un texto, o un lote de textos, en placas con braille en relieve (español, grado 1) y descarga los STL para imprimir en 3D, directamente en el navegador.">
+<meta name="description" content="Genera carteles con pictogramas de ARASAAC y texto en SVG, en un solo color a tu elección, listos para cortar y grabar con láser. Todo en el navegador.">
 <meta name="theme-color" content="#9a6bb4">
 <link rel="stylesheet" href="./style.css">
 </head>
@@ -13,8 +13,9 @@
 <main class="wrap">
   <h1>Carteles con pictogramas</h1>
   <p class="subtitle">
-    Placas con un pictograma de ARASAAC en relieve y, si quieres, el texto en braille debajo: ideales para rutinas y agendas visuales, listas para imprimir en 3D.
-    Con el modo por lotes generas muchos carteles de una vez en un ZIP. Todo ocurre en tu navegador: no se sube nada a ningún servidor.  </p>
+    Carteles con pictograma de ARASAAC y texto, en un SVG de un solo color (el que elijas), listos para cortar y grabar con láser.
+    Con el modo por lotes generas muchos de una vez, en archivos sueltos y en una hoja. Todo ocurre en tu navegador: no se sube nada a ningún servidor.
+  </p>
 
   <div class="layout">
     <div class="col-controls">
@@ -29,16 +30,13 @@
         <div class="card">
           <p class="card-label">Texto</p>
           <label for="texto" class="note" style="margin:0 0 6px;display:block">Cada salto de línea es una línea nueva del cartel.</label>
-          <textarea id="texto" spellcheck="false" placeholder="Escribe aquí…">Hola, mundo</textarea>
-          <div id="braille-preview" aria-live="polite"></div>
-          <div class="warn" id="warn" role="status"></div>
-          <p class="note">Braille español, grado 1 (letra a letra): mayúsculas, números, ñ, acentos, ü y puntuación habitual.</p>
+          <textarea id="texto" spellcheck="false" placeholder="Escribe aquí…">Lavarse los dientes</textarea>
         </div>
 
         <div class="card" id="picto-card">
-          <p class="card-label">Pictograma (opcional)</p>
-          <div class="check"><input type="checkbox" id="picto-on"><label for="picto-on">Añadir un pictograma de ARASAAC</label></div>
-          <div id="picto-panel" hidden>
+          <p class="card-label">Pictograma</p>
+          <div class="check"><input type="checkbox" id="picto-on" checked><label for="picto-on">Añadir un pictograma de ARASAAC</label></div>
+          <div id="picto-panel">
             <div class="search-row">
               <input type="search" id="picto-q" placeholder="Palabra: casa, desayunar, leer…" autocomplete="off" spellcheck="false">
               <button class="btn" id="picto-search" type="button">Buscar</button>
@@ -59,9 +57,9 @@
           <details class="howto" open>
             <summary>Cómo usar el modo por lotes</summary>
             <ol>
-              <li>Ajusta la placa y los puntos más abajo: valdrán para todos los carteles.</li>
+              <li>Ajusta el cartel más abajo (color, tamaños…): valdrá para todos.</li>
               <li>Escribe un cartel por línea (o separa los carteles con una línea en blanco).</li>
-              <li>Pulsa «Generar todo» y descarga un ZIP con un STL por cartel.</li>
+              <li>Pulsa «Generar todo» y descarga un ZIP con un SVG por cartel y una hoja con todos juntos.</li>
             </ol>
           </details>
 
@@ -74,16 +72,18 @@
           </div>
 
           <label for="lote" class="note" style="margin:10px 0 6px;display:block">Textos</label>
-          <textarea id="lote" spellcheck="false" placeholder="Aula 1&#10;Biblioteca&#10;Laboratorio&#10;Dirección&#10;…">Aula 1
-Biblioteca
-Laboratorio
-Dirección</textarea>
-          <div class="check"><input type="checkbox" id="batch-picto-on"><label for="batch-picto-on">Añadir un pictograma de ARASAAC a cada cartel</label></div>
-          <p class="note" id="batch-picto-help" hidden>
+          <textarea id="lote" spellcheck="false" placeholder="Levantarse&#10;Desayunar&#10;Lavarse los dientes&#10;Ir al cole&#10;…">Levantarse
+Desayunar
+Lavarse los dientes
+Vestirse</textarea>
+          <div class="check"><input type="checkbox" id="batch-picto-on" checked><label for="batch-picto-on">Añadir un pictograma de ARASAAC a cada cartel</label></div>
+          <p class="note" id="batch-picto-help">
             Se busca con el texto de cada cartel. Para elegir otro, escribe detrás una barra:
             <code>Levantarse | despertarse</code> (busca esa palabra) o <code>Levantarse | #6964</code>
             (número exacto de ARASAAC). Pictogramas de <a href="https://arasaac.org" target="_blank" rel="noopener">ARASAAC</a>, CC BY-NC-SA (uso no comercial).
           </p>
+          <div class="check"><input type="checkbox" id="batch-same" checked><label for="batch-same">Mismo tamaño para todos los carteles</label></div>
+          <div class="row"><label for="sheetWidth">Ancho de la hoja con todos juntos (mm)</label><input type="number" id="sheetWidth" min="50" max="2000" step="10"></div>
           <div class="count" id="batch-count" aria-live="polite"></div>
           <div class="warn" id="batch-warn" role="status"></div>
           <div class="notice warning" id="batch-large" hidden role="note">
@@ -112,49 +112,54 @@ Dirección</textarea>
         </div>
       </section>
 
-      <details class="card panel" id="settings-panel">
+      <details class="card panel" id="settings-panel" open>
         <summary>
-          <span class="card-label">Ajustes de placa y puntos braille</span>
-          <span class="panel-hint">Medidas en mm · valores estándar</span>
+          <span class="card-label">Ajustes del cartel</span>
+          <span class="panel-hint">Medidas en mm</span>
         </summary>
         <div class="panel-body">
-          <h2 class="subhead">Placa</h2>
-        <div class="row"><label for="maxCells">Celdas máx. por línea (0 = sin límite)</label><input type="number" id="maxCells" min="0" max="60" step="1"></div>
-        <div class="row"><label for="thickness">Grosor de la placa (mm)</label><input type="number" id="thickness" min="1" max="10" step="0.1"></div>
-        <div class="row"><label for="margin">Margen (mm)</label><input type="number" id="margin" min="2" max="30" step="0.5"></div>
-        <div class="row"><label for="cornerRadius">Esquinas redondeadas (mm)</label><input type="number" id="cornerRadius" min="0" max="20" step="0.5"></div>
-        <div class="check"><input type="checkbox" id="holes"><label for="holes">Dos agujeros de fijación (a los lados)</label></div>
-        <div class="row"><label for="holeDiameter">Diámetro del agujero (mm)</label><input type="number" id="holeDiameter" min="1.5" max="10" step="0.1"></div>
+          <h2 class="subhead">Color</h2>
+          <div class="row"><label for="color">Color del cartel</label><input type="color" id="color"></div>
+          <div class="check"><input type="checkbox" id="cutOther"><label for="cutOther">Usar otro color para el contorno de corte</label></div>
+          <div class="row" id="cutColorRow" hidden><label for="colorCorte">Color del contorno de corte</label><input type="color" id="colorCorte"></div>
 
-          <h2 class="subhead">Puntos braille</h2>
-        <div class="row"><label for="dotDiameter">Diámetro del punto (mm)</label><input type="number" id="dotDiameter" min="1" max="3" step="0.1"></div>
-        <div class="row"><label for="dotHeight">Altura del punto (mm)</label><input type="number" id="dotHeight" min="0.3" max="1.5" step="0.05"></div>
-        <div class="row"><label for="dotSpacing">Separación entre puntos (mm)</label><input type="number" id="dotSpacing" min="2" max="4" step="0.1"></div>
-        <div class="row"><label for="cellSpacing">Separación entre celdas (mm)</label><input type="number" id="cellSpacing" min="4" max="9" step="0.1"></div>
-        <div class="row"><label for="lineSpacing">Separación entre líneas (mm)</label><input type="number" id="lineSpacing" min="7" max="16" step="0.5"></div>
           <h2 class="subhead">Pictograma</h2>
-        <div class="row"><label for="pictoSize">Tamaño del recuadro (mm)</label><input type="number" id="pictoSize" min="10" max="80" step="1"></div>
-        <div class="row"><label for="pictoPos">Posición</label><select id="pictoPos"><option value="top">Encima del texto</option><option value="left">A la izquierda</option></select></div>
-        <div class="row"><label for="pictoHeight">Altura del relieve (mm)</label><input type="number" id="pictoHeight" min="0.4" max="3" step="0.1"></div>
-        <div class="row"><label for="pictoDetail">Altura extra de las líneas oscuras (mm, 0 = sin detalle)</label><input type="number" id="pictoDetail" min="0" max="2" step="0.1"></div>
-        <p class="note">Solo afecta a los carteles con pictograma.</p>
-        <p class="note">Valores por defecto: braille «Marburg Medium» (punto 1,5 mm, 2,5 mm entre puntos, 6 mm entre celdas, 10 mm entre líneas), pensado para impresión 3D. Con boquilla de 0,4 mm, mejor altura de punto ≥ 0,6 mm.</p>
-        <button type="button" class="link" id="reset-btn">Restaurar medidas estándar</button>
+          <div class="row"><label for="pictoSize">Tamaño del pictograma (mm)</label><input type="number" id="pictoSize" min="10" max="300" step="1"></div>
+          <div class="row"><label for="pictoStyle">Estilo</label>
+            <select id="pictoStyle">
+              <option value="lineas">Líneas (contorno y detalles)</option>
+              <option value="silueta">Silueta rellena</option>
+              <option value="mixto">Silueta con detalles vaciados</option>
+            </select></div>
+
+          <h2 class="subhead">Texto</h2>
+          <div class="check"><input type="checkbox" id="mostrarTexto"><label for="mostrarTexto">Mostrar el texto en el cartel</label></div>
+          <div class="row"><label for="textSize">Tamaño de letra (mm)</label><input type="number" id="textSize" min="3" max="60" step="0.5"></div>
+          <div class="row"><label for="fontStyle">Letra</label>
+            <select id="fontStyle"><option value="bold">Negrita</option><option value="regular">Normal</option></select></div>
+
+          <h2 class="subhead">Placa</h2>
+          <div class="row"><label for="margin">Margen (mm)</label><input type="number" id="margin" min="1" max="40" step="0.5"></div>
+          <div class="row"><label for="gap">Separación pictograma-texto (mm)</label><input type="number" id="gap" min="0" max="40" step="0.5"></div>
+          <div class="row"><label for="cornerRadius">Esquinas redondeadas (mm)</label><input type="number" id="cornerRadius" min="0" max="40" step="0.5"></div>
+          <div class="check"><input type="checkbox" id="holes"><label for="holes">Dos agujeros de fijación (a los lados)</label></div>
+          <div class="row"><label for="holeDiameter">Diámetro del agujero (mm)</label><input type="number" id="holeDiameter" min="1" max="20" step="0.5"></div>
+          <p class="note">El contorno y los agujeros son líneas finas (0,1 mm); el pictograma y el texto son formas rellenas. El texto va convertido a trazados: no necesitas tener la letra instalada.</p>
+          <button type="button" class="link" id="reset-btn">Restaurar valores por defecto</button>
         </div>
       </details>
 
       <div class="actions">
-        <button class="btn primary" id="generate-btn" type="button" disabled>Generar cartel</button>
-        <button class="btn" id="download-btn" type="button" disabled>Descargar STL</button>
+        <button class="btn primary" id="generate-btn" type="button">Actualizar vista previa</button>
+        <button class="btn" id="download-btn" type="button" disabled>Descargar SVG</button>
       </div>
-      <div id="status" role="status">Cargando el motor 3D…</div>
+      <div id="status" role="status">Cargando la letra…</div>
     </div>
 
     <div class="col-viewport">
       <div class="viewport-card">
-        <div id="canvas-holder"></div>
+        <div id="svg-holder" aria-live="polite"></div>
         <div id="stats"></div>
-        <div id="hint">Arrastra para rotar · rueda para zoom</div>
       </div>
       <div class="preview-row" id="preview-row" hidden>
         <label for="previewIndex">Vista previa del cartel nº</label>
@@ -168,16 +173,14 @@ Dirección</textarea>
 
 <footer class="foot">
   <p>Hecho con ♥ para el aula · <a href="https://miguelquiroga.es">miguelquiroga.es</a></p>
-  <p class="foot-note">Pictogramas opcionales: <a href="https://arasaac.org" target="_blank" rel="noopener">ARASAAC</a> (Gobierno de Aragón, autor Sergio Palao), licencia CC BY-NC-SA.</p>
+  <p class="foot-note">Pictogramas: <a href="https://arasaac.org" target="_blank" rel="noopener">ARASAAC</a> (Gobierno de Aragón, autor Sergio Palao), licencia CC BY-NC-SA. Letra: DejaVu Sans.</p>
 </footer>
 
 <script type="importmap">
 {
   "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
-    "manifold-3d": "https://cdn.jsdelivr.net/npm/manifold-3d@3.1.1/manifold.js",
-    "jszip": "https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm"
+    "jszip": "https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm",
+    "opentype.js": "https://cdn.jsdelivr.net/npm/opentype.js@1.3.4/dist/opentype.module.js"
   }
 }
 </script>
