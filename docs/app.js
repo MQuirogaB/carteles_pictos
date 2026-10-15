@@ -32,7 +32,6 @@ const SHEET_WIDTH = 300;
 
 let mode = "single";           // "single" | "batch"
 const fonts = {};              // caché de letras (opentype Font), por clave
-let fuentePropia = null;       // { nombre, font } si se subió una letra propia
 let lastSVG = null;            // SVG del cartel en la vista previa (modo simple)
 let lastName = "cartel";
 let batchRunning = false;
@@ -50,10 +49,6 @@ const nextFrame = () => new Promise((r) => requestAnimationFrame(() => setTimeou
 
 async function cargarFuente() {
   const id = el("fontFamily").value;
-  if (id === "propia") {
-    if (!fuentePropia) throw new Error("sube primero un archivo de letra (.ttf, .otf o .woff)");
-    return fuentePropia.font;
-  }
   const f = FONTS[id] || FONTS[FONT_DEFAULT];
   const clave = `${f.archivo}-${el("fontBold").checked ? 700 : 400}`;
   if (!fonts[clave]) {
@@ -72,23 +67,6 @@ function rellenarFuentes() {
     o.textContent = f.nombre;
     sel.append(o);
   }
-  const o = document.createElement("option");
-  o.value = "propia";
-  o.textContent = "Mi propia letra (subir archivo)…";
-  sel.append(o);
-}
-
-async function subirFuente(file) {
-  if (!file) return;
-  try {
-    const font = opentype.parse(await file.arrayBuffer());
-    fuentePropia = { nombre: file.name, font };
-    el("fontMsg").textContent = `Letra cargada: ${file.name}`;
-  } catch (err) {
-    fuentePropia = null;
-    el("fontMsg").textContent = "No se pudo leer esa letra (usa .ttf, .otf o .woff).";
-  }
-  scheduleGenerate();
 }
 
 // ---------------------------------------------------------------------
@@ -113,8 +91,7 @@ function syncDisabled() {
   el("holeDiameter").disabled = !el("holes").checked;
   el("textSize").disabled = !el("mostrarTexto").checked;
   el("fontFamily").disabled = !el("mostrarTexto").checked;
-  el("fontBold").disabled = !el("mostrarTexto").checked || el("fontFamily").value === "propia";
-  el("fontFileRow").hidden = el("fontFamily").value !== "propia";
+  el("fontBold").disabled = !el("mostrarTexto").checked;
   el("cutColorRow").hidden = !el("cutOther").checked;
 }
 
@@ -605,7 +582,6 @@ for (const k of NUM_FIELDS) el(k).addEventListener("input", onInput);
 for (const k of ["pictoStyle", "color", "colorCorte"]) el(k).addEventListener("input", onInput);
 el("fontFamily").addEventListener("change", () => { syncDisabled(); onInput(); });
 el("fontBold").addEventListener("change", onInput);
-el("font-file").addEventListener("change", (e) => subirFuente(e.target.files?.[0]));
 for (const k of ["holes", "mostrarTexto", "cutOther"]) el(k).addEventListener("change", () => { syncDisabled(); onInput(); });
 el("reset-btn").addEventListener("click", () => { applyDefaultsToUI(); onInput(); });
 

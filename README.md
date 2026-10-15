@@ -7,7 +7,7 @@ Generador online de **carteles con pictograma de [ARASAAC](https://arasaac.org) 
 - **Un cartel**: buscas un pictograma por palabra (o subes tu propia imagen), escribes el texto y descargas el SVG.
 - **Un solo color a tu elección** para todo el cartel. Opcionalmente, otro color para el contorno de corte.
 - El cartel es una placa con esquinas redondeadas (y dos agujeros de fijación opcionales). El contorno y los agujeros son líneas finas (0,1 mm); el pictograma y el texto son formas rellenas.
-- El texto va **convertido a trazados**, así no hace falta tener la letra instalada en el programa del láser. Letras incluidas: Atkinson Hyperlegible, Lexend, Nunito, Comic Neue, DejaVu Sans y DejaVu Serif (normal y negrita), o sube la tuya (.ttf, .otf, .woff).
+- El texto va **convertido a trazados**, así no hace falta tener la letra instalada en el programa del láser. Letras incluidas: Atkinson Hyperlegible, Lexend, Nunito, Comic Neue, DejaVu Sans y DejaVu Serif (normal y negrita).
 - Tres estilos de pictograma: líneas (contorno y detalles), silueta rellena, o silueta con los detalles vaciados.
 - Texto opcional, tamaños de pictograma, letra, margen, separación y esquinas ajustables (en mm).
 - **Modo por lotes**: un cartel por línea (o separados por una línea en blanco) → un ZIP con un SVG por cartel, una `hoja.svg` con todos juntos y un `lista.csv`. Para elegir otro pictograma se escribe `Levantarse | despertarse` (busca esa palabra) o `Levantarse | #6964` (número de ARASAAC). Si no se encuentra o falla la conexión, ese cartel se genera sin pictograma y se avisa. Opción de dar el mismo tamaño a todos.
