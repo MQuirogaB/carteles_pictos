@@ -1,15 +1,21 @@
 import JSZip from "jszip";
 import opentype from "opentype.js";
 
-import { DEFAULTS, construirCartel, envolverSVG, medir, hoja } from "./svg.js";
-import { parsearLote, nombresArchivo, interpretarPicto, slug } from "./batch.js";
-import { ARASAAC, ATRIBUCION, buscarPictos, resolverPicto, reliefDeArasaac, reliefDeArchivo } from "./picto.js";
+import { DEFAULTS, construirCartel, envolverSVG, medir, hoja } from "./svg.js?v=3";
+import { parsearLote, nombresArchivo, interpretarPicto, slug } from "./batch.js?v=3";
+import { ARASAAC, ATRIBUCION, buscarPictos, resolverPicto, reliefDeArasaac, reliefDeArchivo } from "./picto.js?v=3";
 
 // ---------------------------------------------------------------------
 // Elementos y estado
 // ---------------------------------------------------------------------
 
 const el = (id) => document.getElementById(id);
+
+// Si algo falla al arrancar (por ejemplo, archivos antiguos en la caché del navegador), que se vea.
+window.addEventListener("error", (e) => {
+  const s = document.getElementById("status");
+  if (s) { s.textContent = "Error: " + (e.message || "no se pudo iniciar") + ". Prueba a recargar con Ctrl+Shift+R."; s.classList.add("error"); }
+});
 const statusEl = el("status");
 const generateBtn = el("generate-btn");
 const downloadBtn = el("download-btn");
