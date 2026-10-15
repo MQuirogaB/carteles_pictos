@@ -1,9 +1,9 @@
 import JSZip from "jszip";
 import opentype from "opentype.js";
 
-import { DEFAULTS, construirCartel, envolverSVG, medir, hoja } from "./svg.js?v=3";
-import { parsearLote, nombresArchivo, interpretarPicto, slug } from "./batch.js?v=3";
-import { ARASAAC, ATRIBUCION, buscarPictos, resolverPicto, reliefDeArasaac, reliefDeArchivo } from "./picto.js?v=3";
+import { DEFAULTS, construirCartel, envolverSVG, medir, hoja } from "./svg.js?v=4";
+import { parsearLote, nombresArchivo, interpretarPicto, slug } from "./batch.js?v=4";
+import { ARASAAC, ATRIBUCION, buscarPictos, resolverPicto, reliefDeArasaac, reliefDeArchivo } from "./picto.js?v=4";
 
 // ---------------------------------------------------------------------
 // Elementos y estado
@@ -88,7 +88,7 @@ function applyDefaultsToUI() {
   el("fontBold").checked = true;
   el("color").value = DEFAULTS.color;
   el("colorCorte").value = "#ff0000";
-  el("cutOther").checked = false;
+  el("cutOther").checked = true;
   el("sheetWidth").value = SHEET_WIDTH;
   syncDisabled();
 }

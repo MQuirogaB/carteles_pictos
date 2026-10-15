@@ -5,7 +5,7 @@ Generador online de **carteles con pictograma de [ARASAAC](https://arasaac.org) 
 ## Qué hace
 
 - **Un cartel**: buscas un pictograma por palabra (o subes tu propia imagen), escribes el texto y descargas el SVG.
-- **Un solo color a tu elección** para todo el cartel. Opcionalmente, otro color para el contorno de corte.
+- **Un solo color a tu elección** para todo el cartel. El contorno de corte sale en rojo por defecto (se puede cambiar o desactivar para que todo sea del mismo color).
 - El cartel es una placa con esquinas redondeadas (y dos agujeros de fijación opcionales). El contorno y los agujeros son líneas finas (0,1 mm); el pictograma y el texto son formas rellenas.
 - El texto va **convertido a trazados**, así no hace falta tener la letra instalada en el programa del láser. Letras incluidas: Atkinson Hyperlegible, Lexend, Nunito, Comic Neue, DejaVu Sans y DejaVu Serif (normal y negrita).
 - Tres estilos de pictograma: líneas (contorno y detalles), silueta rellena, o silueta con los detalles vaciados.
