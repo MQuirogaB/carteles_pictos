@@ -1,0 +1,12 @@
+{
+  "name": "carteles-pictos",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/run.mjs && node tests/picto.mjs"
+  },
+  "devDependencies": {
+    "manifold-3d": "3.1.1",
+    "jszip": "3.10.1"
+  }
+}

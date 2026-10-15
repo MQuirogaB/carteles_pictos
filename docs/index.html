@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carteles con pictogramas · generador online · miguelquiroga.es</title>
+<meta name="description" content="Convierte un texto, o un lote de textos, en placas con braille en relieve (español, grado 1) y descarga los STL para imprimir en 3D, directamente en el navegador.">
+<meta name="theme-color" content="#9a6bb4">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+<main class="wrap">
+  <h1>Carteles con pictogramas</h1>
+  <p class="subtitle">
+    Placas con un pictograma de ARASAAC en relieve y, si quieres, el texto en braille debajo: ideales para rutinas y agendas visuales, listas para imprimir en 3D.
+    Con el modo por lotes generas muchos carteles de una vez en un ZIP. Todo ocurre en tu navegador: no se sube nada a ningún servidor.  </p>
+
+  <div class="layout">
+    <div class="col-controls">
+
+      <div class="pills" role="tablist" aria-label="Modo de generación">
+        <button class="pill active" id="tab-single" role="tab" aria-selected="true" type="button">Un cartel</button>
+        <button class="pill" id="tab-batch" role="tab" aria-selected="false" type="button">Por lotes (ZIP)</button>
+      </div>
+
+      <!-- ===== MODO UN CARTEL ===== -->
+      <section id="mode-single">
+        <div class="card">
+          <p class="card-label">Texto</p>
+          <label for="texto" class="note" style="margin:0 0 6px;display:block">Cada salto de línea es una línea nueva del cartel.</label>
+          <textarea id="texto" spellcheck="false" placeholder="Escribe aquí…">Hola, mundo</textarea>
+          <div id="braille-preview" aria-live="polite"></div>
+          <div class="warn" id="warn" role="status"></div>
+          <p class="note">Braille español, grado 1 (letra a letra): mayúsculas, números, ñ, acentos, ü y puntuación habitual.</p>
+        </div>
+
+        <div class="card" id="picto-card">
+          <p class="card-label">Pictograma (opcional)</p>
+          <div class="check"><input type="checkbox" id="picto-on"><label for="picto-on">Añadir un pictograma de ARASAAC</label></div>
+          <div id="picto-panel" hidden>
+            <div class="search-row">
+              <input type="search" id="picto-q" placeholder="Palabra: casa, desayunar, leer…" autocomplete="off" spellcheck="false">
+              <button class="btn" id="picto-search" type="button">Buscar</button>
+            </div>
+            <div class="picto-grid" id="picto-results" role="group" aria-label="Pictogramas encontrados"></div>
+            <div class="note" id="picto-msg" role="status"></div>
+            <label for="picto-file" class="note" style="margin:12px 0 4px;display:block">…o usa tu propia imagen (PNG con fondo transparente, o dibujo oscuro sobre blanco)</label>
+            <input type="file" id="picto-file" accept="image/*">
+            <p class="note">Pictogramas de <a href="https://arasaac.org" target="_blank" rel="noopener">ARASAAC</a> (Gobierno de Aragón, autor Sergio Palao), licencia CC BY-NC-SA: uso no comercial citando la fuente.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== MODO POR LOTES ===== -->
+      <section id="mode-batch" hidden>
+        <div class="card" id="batch-setup">
+          <p class="card-label">Lote de carteles</p>
+          <details class="howto" open>
+            <summary>Cómo usar el modo por lotes</summary>
+            <ol>
+              <li>Ajusta la placa y los puntos más abajo: valdrán para todos los carteles.</li>
+              <li>Escribe un cartel por línea (o separa los carteles con una línea en blanco).</li>
+              <li>Pulsa «Generar todo» y descarga un ZIP con un STL por cartel.</li>
+            </ol>
+          </details>
+
+          <div class="row">
+            <label for="separator">Cómo separo los carteles</label>
+            <select id="separator">
+              <option value="linea" selected>Una línea = un cartel</option>
+              <option value="bloque">Línea en blanco entre carteles</option>
+            </select>
+          </div>
+
+          <label for="lote" class="note" style="margin:10px 0 6px;display:block">Textos</label>
+          <textarea id="lote" spellcheck="false" placeholder="Aula 1&#10;Biblioteca&#10;Laboratorio&#10;Dirección&#10;…">Aula 1
+Biblioteca
+Laboratorio
+Dirección</textarea>
+          <div class="check"><input type="checkbox" id="batch-picto-on"><label for="batch-picto-on">Añadir un pictograma de ARASAAC a cada cartel</label></div>
+          <p class="note" id="batch-picto-help" hidden>
+            Se busca con el texto de cada cartel. Para elegir otro, escribe detrás una barra:
+            <code>Levantarse | despertarse</code> (busca esa palabra) o <code>Levantarse | #6964</code>
+            (número exacto de ARASAAC). Pictogramas de <a href="https://arasaac.org" target="_blank" rel="noopener">ARASAAC</a>, CC BY-NC-SA (uso no comercial).
+          </p>
+          <div class="count" id="batch-count" aria-live="polite"></div>
+          <div class="warn" id="batch-warn" role="status"></div>
+          <div class="notice warning" id="batch-large" hidden role="note">
+            <span>⚠️</span><span id="batch-large-text"></span>
+          </div>
+        </div>
+
+        <div class="card" id="batch-progress-card" hidden>
+          <p class="card-label">Generando carteles…</p>
+          <div class="progress-head"><span id="bp-title">Generando…</span><span id="bp-percent">0 %</span></div>
+          <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="bp-bar-wrap"><div id="bp-bar"></div></div>
+          <p class="progress-sub" id="bp-count"></p>
+          <p class="progress-sub" id="bp-current"></p>
+          <div class="actions" style="margin-top:12px">
+            <button class="btn danger" id="batch-abort" type="button">⏹ Abortar</button>
+          </div>
+        </div>
+
+        <div class="card" id="batch-results-card" hidden>
+          <p class="card-label">Resultado</p>
+          <div id="batch-results" aria-live="polite"></div>
+          <div class="actions" style="margin-top:12px">
+            <button class="btn primary" id="batch-zip" type="button">⬇ Descargar ZIP</button>
+            <button class="btn" id="batch-new" type="button">Empezar de nuevo</button>
+          </div>
+        </div>
+      </section>
+
+      <details class="card panel" id="settings-panel">
+        <summary>
+          <span class="card-label">Ajustes de placa y puntos braille</span>
+          <span class="panel-hint">Medidas en mm · valores estándar</span>
+        </summary>
+        <div class="panel-body">
+          <h2 class="subhead">Placa</h2>
+        <div class="row"><label for="maxCells">Celdas máx. por línea (0 = sin límite)</label><input type="number" id="maxCells" min="0" max="60" step="1"></div>
+        <div class="row"><label for="thickness">Grosor de la placa (mm)</label><input type="number" id="thickness" min="1" max="10" step="0.1"></div>
+        <div class="row"><label for="margin">Margen (mm)</label><input type="number" id="margin" min="2" max="30" step="0.5"></div>
+        <div class="row"><label for="cornerRadius">Esquinas redondeadas (mm)</label><input type="number" id="cornerRadius" min="0" max="20" step="0.5"></div>
+        <div class="check"><input type="checkbox" id="holes"><label for="holes">Dos agujeros de fijación (a los lados)</label></div>
+        <div class="row"><label for="holeDiameter">Diámetro del agujero (mm)</label><input type="number" id="holeDiameter" min="1.5" max="10" step="0.1"></div>
+
+          <h2 class="subhead">Puntos braille</h2>
+        <div class="row"><label for="dotDiameter">Diámetro del punto (mm)</label><input type="number" id="dotDiameter" min="1" max="3" step="0.1"></div>
+        <div class="row"><label for="dotHeight">Altura del punto (mm)</label><input type="number" id="dotHeight" min="0.3" max="1.5" step="0.05"></div>
+        <div class="row"><label for="dotSpacing">Separación entre puntos (mm)</label><input type="number" id="dotSpacing" min="2" max="4" step="0.1"></div>
+        <div class="row"><label for="cellSpacing">Separación entre celdas (mm)</label><input type="number" id="cellSpacing" min="4" max="9" step="0.1"></div>
+        <div class="row"><label for="lineSpacing">Separación entre líneas (mm)</label><input type="number" id="lineSpacing" min="7" max="16" step="0.5"></div>
+          <h2 class="subhead">Pictograma</h2>
+        <div class="row"><label for="pictoSize">Tamaño del recuadro (mm)</label><input type="number" id="pictoSize" min="10" max="80" step="1"></div>
+        <div class="row"><label for="pictoPos">Posición</label><select id="pictoPos"><option value="top">Encima del texto</option><option value="left">A la izquierda</option></select></div>
+        <div class="row"><label for="pictoHeight">Altura del relieve (mm)</label><input type="number" id="pictoHeight" min="0.4" max="3" step="0.1"></div>
+        <div class="row"><label for="pictoDetail">Altura extra de las líneas oscuras (mm, 0 = sin detalle)</label><input type="number" id="pictoDetail" min="0" max="2" step="0.1"></div>
+        <p class="note">Solo afecta a los carteles con pictograma.</p>
+        <p class="note">Valores por defecto: braille «Marburg Medium» (punto 1,5 mm, 2,5 mm entre puntos, 6 mm entre celdas, 10 mm entre líneas), pensado para impresión 3D. Con boquilla de 0,4 mm, mejor altura de punto ≥ 0,6 mm.</p>
+        <button type="button" class="link" id="reset-btn">Restaurar medidas estándar</button>
+        </div>
+      </details>
+
+      <div class="actions">
+        <button class="btn primary" id="generate-btn" type="button" disabled>Generar cartel</button>
+        <button class="btn" id="download-btn" type="button" disabled>Descargar STL</button>
+      </div>
+      <div id="status" role="status">Cargando el motor 3D…</div>
+    </div>
+
+    <div class="col-viewport">
+      <div class="viewport-card">
+        <div id="canvas-holder"></div>
+        <div id="stats"></div>
+        <div id="hint">Arrastra para rotar · rueda para zoom</div>
+      </div>
+      <div class="preview-row" id="preview-row" hidden>
+        <label for="previewIndex">Vista previa del cartel nº</label>
+        <input type="number" id="previewIndex" min="1" value="1">
+        <img id="preview-picto-img" class="thumb" alt="" hidden>
+        <span class="text" id="preview-text"></span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="foot">
+  <p>Hecho con ♥ para el aula · <a href="https://miguelquiroga.es">miguelquiroga.es</a></p>
+  <p class="foot-note">Pictogramas opcionales: <a href="https://arasaac.org" target="_blank" rel="noopener">ARASAAC</a> (Gobierno de Aragón, autor Sergio Palao), licencia CC BY-NC-SA.</p>
+</footer>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+    "manifold-3d": "https://cdn.jsdelivr.net/npm/manifold-3d@3.1.1/manifold.js",
+    "jszip": "https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm"
+  }
+}
+</script>
+<script type="module" src="./app.js"></script>
+</body>
+</html>
