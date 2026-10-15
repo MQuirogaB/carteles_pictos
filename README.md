@@ -7,7 +7,7 @@ Generador online de **carteles con pictograma de [ARASAAC](https://arasaac.org) 
 - **Un cartel**: buscas un pictograma por palabra (o subes tu propia imagen), escribes el texto y descargas el SVG.
 - **Un solo color a tu elección** para todo el cartel. Opcionalmente, otro color para el contorno de corte.
 - El cartel es una placa con esquinas redondeadas (y dos agujeros de fijación opcionales). El contorno y los agujeros son líneas finas (0,1 mm); el pictograma y el texto son formas rellenas.
-- El texto va **convertido a trazados** (letra DejaVu Sans), así no hace falta tenerla instalada en el programa del láser.
+- El texto va **convertido a trazados**, así no hace falta tener la letra instalada en el programa del láser. Letras incluidas: Atkinson Hyperlegible, Lexend, Nunito, Comic Neue, DejaVu Sans y DejaVu Serif (normal y negrita), o sube la tuya (.ttf, .otf, .woff).
 - Tres estilos de pictograma: líneas (contorno y detalles), silueta rellena, o silueta con los detalles vaciados.
 - Texto opcional, tamaños de pictograma, letra, margen, separación y esquinas ajustables (en mm).
 - **Modo por lotes**: un cartel por línea (o separados por una línea en blanco) → un ZIP con un SVG por cartel, una `hoja.svg` con todos juntos y un `lista.csv`. Para elegir otro pictograma se escribe `Levantarse | despertarse` (busca esa palabra) o `Levantarse | #6964` (número de ARASAAC). Si no se encuentra o falla la conexión, ese cartel se genera sin pictograma y se avisa. Opción de dar el mismo tamaño a todos.
@@ -26,7 +26,7 @@ npm test
 ## Licencias
 
 - Pictogramas: © Gobierno de Aragón, autoría de Sergio Palao, [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/): uso no comercial, citando la fuente y compartiendo las adaptaciones igual. El ZIP incluye `LICENCIA-ARASAAC.txt` cuando se usan.
-- Letra DejaVu Sans: licencia libre de Bitstream Vera / DejaVu.
+- Letras: Atkinson Hyperlegible, Lexend, Nunito y Comic Neue bajo SIL Open Font License 1.1 (vía Fontsource); DejaVu bajo su licencia libre (Bitstream Vera).
 - Derivado de [Cartel braille](https://github.com/MQuirogaB/cartel_braille).
 
 ## Estructura
@@ -35,4 +35,4 @@ npm test
 - `docs/picto.js`: búsqueda en ARASAAC y conversión de imagen a contornos vectoriales.
 - `docs/batch.js`: parte el texto del lote en carteles y calcula los nombres de archivo.
 - `docs/app.js`: interfaz (modo simple y por lotes), vista previa y descargas.
-- `docs/fonts/`: letra DejaVu Sans (normal y negrita).
+- `docs/fonts/`: letras incluidas (normal y negrita).

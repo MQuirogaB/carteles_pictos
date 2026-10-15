@@ -19,11 +19,20 @@ const loteEl = el("lote");
 const holder = el("svg-holder");
 
 const NUM_FIELDS = ["pictoSize", "textSize", "margin", "gap", "cornerRadius", "holeDiameter"];
-const FONT_FILES = { bold: "./fonts/DejaVuSans-Bold.ttf", regular: "./fonts/DejaVuSans.ttf" };
+const FONTS = {
+  atkinson: { nombre: "Atkinson Hyperlegible (muy legible)", archivo: "atkinson-hyperlegible" },
+  lexend: { nombre: "Lexend (lectura fácil)", archivo: "lexend" },
+  nunito: { nombre: "Nunito (redondeada)", archivo: "nunito" },
+  comic: { nombre: "Comic Neue (informal)", archivo: "comic-neue" },
+  dejavu: { nombre: "DejaVu Sans", archivo: "dejavu-sans", ext: "ttf" },
+  serif: { nombre: "DejaVu Serif (con serifa)", archivo: "dejavu-serif", ext: "ttf" },
+};
+const FONT_DEFAULT = "atkinson";
 const SHEET_WIDTH = 300;
 
 let mode = "single";           // "single" | "batch"
-const fonts = {};              // { bold, regular } (opentype Font)
+const fonts = {};              // caché de letras (opentype Font), por clave
+let fuentePropia = null;       // { nombre, font } si se subió una letra propia
 let lastSVG = null;            // SVG del cartel en la vista previa (modo simple)
 let lastName = "cartel";
 let batchRunning = false;
@@ -39,12 +48,47 @@ function setStatus(msg, isError = false) {
 
 const nextFrame = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
 
-async function cargarFuente(clave) {
-  if (fonts[clave]) return fonts[clave];
-  const res = await fetch(FONT_FILES[clave]);
-  if (!res.ok) throw new Error("no se pudo cargar la letra");
-  fonts[clave] = opentype.parse(await res.arrayBuffer());
+async function cargarFuente() {
+  const id = el("fontFamily").value;
+  if (id === "propia") {
+    if (!fuentePropia) throw new Error("sube primero un archivo de letra (.ttf, .otf o .woff)");
+    return fuentePropia.font;
+  }
+  const f = FONTS[id] || FONTS[FONT_DEFAULT];
+  const clave = `${f.archivo}-${el("fontBold").checked ? 700 : 400}`;
+  if (!fonts[clave]) {
+    const res = await fetch(`./fonts/${clave}.${f.ext || "woff"}`);
+    if (!res.ok) throw new Error("no se pudo cargar la letra");
+    fonts[clave] = opentype.parse(await res.arrayBuffer());
+  }
   return fonts[clave];
+}
+
+function rellenarFuentes() {
+  const sel = el("fontFamily");
+  for (const [id, f] of Object.entries(FONTS)) {
+    const o = document.createElement("option");
+    o.value = id;
+    o.textContent = f.nombre;
+    sel.append(o);
+  }
+  const o = document.createElement("option");
+  o.value = "propia";
+  o.textContent = "Mi propia letra (subir archivo)…";
+  sel.append(o);
+}
+
+async function subirFuente(file) {
+  if (!file) return;
+  try {
+    const font = opentype.parse(await file.arrayBuffer());
+    fuentePropia = { nombre: file.name, font };
+    el("fontMsg").textContent = `Letra cargada: ${file.name}`;
+  } catch (err) {
+    fuentePropia = null;
+    el("fontMsg").textContent = "No se pudo leer esa letra (usa .ttf, .otf o .woff).";
+  }
+  scheduleGenerate();
 }
 
 // ---------------------------------------------------------------------
@@ -56,7 +100,8 @@ function applyDefaultsToUI() {
   el("holes").checked = DEFAULTS.holes;
   el("mostrarTexto").checked = DEFAULTS.mostrarTexto;
   el("pictoStyle").value = DEFAULTS.pictoStyle;
-  el("fontStyle").value = "bold";
+  el("fontFamily").value = FONT_DEFAULT;
+  el("fontBold").checked = true;
   el("color").value = DEFAULTS.color;
   el("colorCorte").value = "#ff0000";
   el("cutOther").checked = false;
@@ -67,7 +112,9 @@ function applyDefaultsToUI() {
 function syncDisabled() {
   el("holeDiameter").disabled = !el("holes").checked;
   el("textSize").disabled = !el("mostrarTexto").checked;
-  el("fontStyle").disabled = !el("mostrarTexto").checked;
+  el("fontFamily").disabled = !el("mostrarTexto").checked;
+  el("fontBold").disabled = !el("mostrarTexto").checked || el("fontFamily").value === "propia";
+  el("fontFileRow").hidden = el("fontFamily").value !== "propia";
   el("cutColorRow").hidden = !el("cutOther").checked;
 }
 
@@ -84,8 +131,6 @@ function readParams() {
   p.colorCorte = el("cutOther").checked ? el("colorCorte").value : null;
   return p;
 }
-
-const fuenteActual = () => el("fontStyle").value === "regular" ? "regular" : "bold";
 
 // ---------------------------------------------------------------------
 // Pictogramas (ARASAAC o imagen propia)
@@ -275,7 +320,7 @@ async function generatePreview() {
 
   try {
     const p = readParams();
-    const font = await cargarFuente(fuenteActual());
+    const font = await cargarFuente();
     let texto = "";
     let picto = null;
     let aviso = "";
@@ -441,7 +486,7 @@ async function runBatch() {
   setStatus("");
 
   let font;
-  try { font = await cargarFuente(fuenteActual()); }
+  try { font = await cargarFuente(); }
   catch (err) {
     batchRunning = false;
     showBatchView("setup");
@@ -557,7 +602,10 @@ loteEl.addEventListener("input", onInput);
 el("separator").addEventListener("change", onInput);
 el("previewIndex").addEventListener("input", onInput);
 for (const k of NUM_FIELDS) el(k).addEventListener("input", onInput);
-for (const k of ["pictoStyle", "fontStyle", "color", "colorCorte"]) el(k).addEventListener("input", onInput);
+for (const k of ["pictoStyle", "color", "colorCorte"]) el(k).addEventListener("input", onInput);
+el("fontFamily").addEventListener("change", () => { syncDisabled(); onInput(); });
+el("fontBold").addEventListener("change", onInput);
+el("font-file").addEventListener("change", (e) => subirFuente(e.target.files?.[0]));
 for (const k of ["holes", "mostrarTexto", "cutOther"]) el(k).addEventListener("change", () => { syncDisabled(); onInput(); });
 el("reset-btn").addEventListener("click", () => { applyDefaultsToUI(); onInput(); });
 
@@ -575,13 +623,14 @@ generateBtn.addEventListener("click", () => {
   else generatePreview();
 });
 
+rellenarFuentes();
 applyDefaultsToUI();
 syncPictoUI();
 refreshTexts();
 
 (async () => {
   try {
-    await cargarFuente("bold");
+    await cargarFuente();
     setStatus("Listo.");
     // búsqueda inicial con la primera línea del texto
     el("picto-q").value = firstLine(textoEl.value);

@@ -5,7 +5,7 @@ import { reliefDesdeRGBA, candidatasDeBusqueda, buscarPictos, resolverPicto } fr
 import { parsearLote, interpretarPicto, nombresArchivo } from "../docs/batch.js";
 import { construirCartel, envolverSVG, medir, hoja } from "../docs/svg.js";
 
-const buf = fs.readFileSync(new URL("../docs/fonts/DejaVuSans-Bold.ttf", import.meta.url));
+const buf = fs.readFileSync(new URL("../docs/fonts/dejavu-sans-700.ttf", import.meta.url));
 const font = opentype.parse(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength));
 
 // imagen sintética: anillo con borde oscuro + isla, fondo transparente
@@ -88,6 +88,16 @@ assert.ok(!/NaN|undefined|Infinity/.test(svg), "sin valores raros");
 const h = hoja([base, base, base, base], 200, 3);
 assert.ok(h.w <= 200 + 1e-9 && h.h > base.h);
 assert.equal((h.inner.match(/translate/g) || []).length, 4);
+
+// todas las letras incluidas leen bien y tienen los caracteres del español
+for (const f of fs.readdirSync(new URL("../docs/fonts/", import.meta.url))) {
+  const b = fs.readFileSync(new URL(`../docs/fonts/${f}`, import.meta.url));
+  const ft = opentype.parse(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength));
+  for (const ch of "ñÑáéíóúüÁÉÍÓÚ¿¡?!,.0123456789") assert.ok(ft.charToGlyphIndex(ch) > 0, `${f} sin «${ch}»`);
+  const c = construirCartel(ft, "Año ¿qué?", relieve, {});
+  assert.ok(!/NaN/.test(c.inner) && c.w > 50, f);
+}
+console.log("letras OK");
 
 // escribe ejemplos para revisarlos a ojo
 const out = process.env.SVG_OUT;
